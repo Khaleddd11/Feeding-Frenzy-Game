@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Feeding Frenzy</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: #1a1a2e;
+        overflow: hidden;
+      }
+
+      #game {
+        position: relative;
+        width: 1200px;
+        height: 700px;
+        background: linear-gradient(180deg, #0077be 0%, #004d80 100%);
+        border: 3px solid #fff;
+        overflow: hidden;
+      }
+
+      .fish {
+        position: absolute;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game"></div>
+    <script type="module" src="./js/main.js"></script>
+  </body>
+</html>

@@ -1,11 +1,11 @@
 import { CONFIG } from '../config/config.js';
-import { Fish } from './Fish.js';
+import Fish from './Fish.js';
 
 export default class Player extends Fish {
     static instance = null;
 
     constructor(x, y, imagesArray) {
-         if (Player.instance) {
+        if (Player.instance) {
             return Player.instance;
         }
         super(x, y, 
@@ -18,15 +18,39 @@ export default class Player extends Fish {
         this.images = imagesArray; 
         this.level = CONFIG.SIZE.TINY; 
         this.score = 0;
-        this.speed = CONFIG.PLAYER.ACCELERATION; 
+        this.speed = CONFIG.PLAYER.ACCELERATION;
+        this.direction = 'right';  // Default direction
     }
 
     update(mouseX, mouseY) {
+        // flip direction based on movement
+        if (mouseX > this.x) {
+            if (this.direction !== 'right') {
+                this.direction = 'right';
+                this.updateSprite();
+            }
+        } else if (mouseX < this.x) {
+            if (this.direction !== 'left') {
+                this.direction = 'left';
+                this.updateSprite();
+            }
+        }
+
         this.x += (mouseX - this.x) * this.speed;
         this.y += (mouseY - this.y) * this.speed;
-        this.x = Math.max(0, Math.min(this.x, window.innerWidth - this.width));
-        this.y = Math.max(0, Math.min(this.y, window.innerHeight - this.height));
+        this.x = Math.max(0, Math.min(this.x, CONFIG.CANVAS_WIDTH - this.width));
+        this.y = Math.max(0, Math.min(this.y, CONFIG.CANVAS_HEIGHT - this.height));
         this.render();
+    }
+
+    // update player direction
+    updateSprite() {
+        const currentSrc = this.element.src;
+        if (this.direction === 'left') {
+            this.element.src = currentSrc.replace('_right_', '_left_');
+        } else {
+            this.element.src = currentSrc.replace('_left_', '_right_');
+        }
     }
 
     grow() {
@@ -46,7 +70,7 @@ export default class Player extends Fish {
 
         if (this.level !== oldLevel) {
             this.element.src = this.images[this.level];
-            
+            this.updateSprite();
         }
         this.render();
     }
