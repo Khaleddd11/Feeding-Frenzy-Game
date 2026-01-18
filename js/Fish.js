@@ -1,5 +1,5 @@
 
-class Fish {
+export default class Fish {
     constructor(x, y, width, height, imageSrc) {
         if (this.constructor === Fish) throw new Error("Abstract Class");
 

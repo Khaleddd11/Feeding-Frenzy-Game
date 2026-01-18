@@ -1,7 +1,7 @@
 import { CONFIG } from '../config/config.js';
 import { Fish } from './Fish.js';
 
-class Player extends Fish {
+export default class Player extends Fish {
     static instance = null;
 
     constructor(x, y, imagesArray) {
