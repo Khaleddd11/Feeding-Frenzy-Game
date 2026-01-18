@@ -1,5 +1,5 @@
 import { CONFIG } from '../config/config.js';
-import { Fish } from './Fish.js';
+import  Fish  from './Fish.js';
 
 export default class Player extends Fish {
     static instance = null;
