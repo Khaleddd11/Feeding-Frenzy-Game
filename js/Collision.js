@@ -1,4 +1,4 @@
-let detectCollisionBetweenPlayerFishAndEnemyFishesV2 = function () {
+let CollisionDetectionPlayerFishAndEnemyFishes = function () {
     const pX = parseInt(fishPlayer.style.left);
     const pY = parseInt(fishPlayer.style.top);
     const pWidth = fishPlayer.width;
