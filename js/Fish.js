@@ -25,6 +25,8 @@ export default class Fish {
         
         this.element.style.width = `${this.width}px`;
         this.element.style.height = `${this.height}px`;
+        
+         this.element.style.transform = this.direction === -1 ? "scaleX(-1)" : "scaleX(1)";
     }
 
     isColliding(other) {

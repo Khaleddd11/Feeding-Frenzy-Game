@@ -23,18 +23,11 @@ export default class Player extends Fish {
     }
 
     update(mouseX, mouseY) {
-        // flip direction based on movement
-        if (mouseX > this.x) {
-            if (this.direction !== 'right') {
-                this.direction = 'right';
-                this.updateSprite();
-            }
-        } else if (mouseX < this.x) {
-            if (this.direction !== 'left') {
-                this.direction = 'left';
-                this.updateSprite();
-            }
-        }
+       const dx = mouseX - this.x;
+
+       if (dx !== 0) {
+        this.direction = dx < 0 ? -1 : 1;
+    }
 
         this.x += (mouseX - this.x) * this.speed;
         this.y += (mouseY - this.y) * this.speed;
@@ -43,15 +36,7 @@ export default class Player extends Fish {
         this.render();
     }
 
-    // update player direction
-    updateSprite() {
-        const currentSrc = this.element.src;
-        if (this.direction === 'left') {
-            this.element.src = currentSrc.replace('_right_', '_left_');
-        } else {
-            this.element.src = currentSrc.replace('_left_', '_right_');
-        }
-    }
+  
 
     grow() {
         this.score += CONFIG.PLAYER.EAT_POINTS; 
