@@ -19,39 +19,25 @@ export default class Player extends Fish {
         this.level = CONFIG.SIZE.TINY; 
         this.score = 0;
         this.speed = CONFIG.PLAYER.ACCELERATION;
-        this.direction = 'right';  // Default direction
+        this.direction = 1;  
     }
 
-    update(mouseX, mouseY) {
-        // flip direction based on movement
-        if (mouseX > this.x) {
-            if (this.direction !== 'right') {
-                this.direction = 'right';
-                this.updateSprite();
-            }
-        } else if (mouseX < this.x) {
-            if (this.direction !== 'left') {
-                this.direction = 'left';
-                this.updateSprite();
-            }
-        }
+     update(mouseX, mouseY) {
+        const dx = mouseX - this.x;
 
-        this.x += (mouseX - this.x) * this.speed;
-        this.y += (mouseY - this.y) * this.speed;
-        this.x = Math.max(0, Math.min(this.x, CONFIG.CANVAS_WIDTH - this.width));
-        this.y = Math.max(0, Math.min(this.y, CONFIG.CANVAS_HEIGHT - this.height));
-        this.render();
-    }
+        if (dx !== 0) {
+         this.direction = dx < 0 ? -1 : 1;
+     }
 
-    // update player direction
-    updateSprite() {
-        const currentSrc = this.element.src;
-        if (this.direction === 'left') {
-            this.element.src = currentSrc.replace('_right_', '_left_');
-        } else {
-            this.element.src = currentSrc.replace('_left_', '_right_');
-        }
-    }
+         this.x += (mouseX - this.x) * this.speed;
+         this.y += (mouseY - this.y) * this.speed;
+         this.x = Math.max(0, Math.min(this.x, CONFIG.CANVAS_WIDTH - this.width));
+         this.y = Math.max(0, Math.min(this.y, CONFIG.CANVAS_HEIGHT - this.height));
+         this.render();
+     }
+
+
+  
 
     grow() {
         this.score += CONFIG.PLAYER.EAT_POINTS; 

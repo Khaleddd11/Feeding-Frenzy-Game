@@ -5,7 +5,7 @@ export const CONFIG = {
     PLAYER: {
         START_WIDTH: 60,
         START_HEIGHT: 50,
-        ACCELERATION: 0.15,
+        ACCELERATION: 0.1,
         GROWTH_WIDTH: 5,
         GROWTH_HEIGHT: 4,
         EAT_POINTS: 10 
