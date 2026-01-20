@@ -19,22 +19,23 @@ export default class Player extends Fish {
         this.level = CONFIG.SIZE.TINY; 
         this.score = 0;
         this.speed = CONFIG.PLAYER.ACCELERATION;
-        this.direction = 'right';  // Default direction
+        this.direction = 1;  
     }
 
-    update(mouseX, mouseY) {
-       const dx = mouseX - this.x;
+     update(mouseX, mouseY) {
+        const dx = mouseX - this.x;
 
-       if (dx !== 0) {
-        this.direction = dx < 0 ? -1 : 1;
-    }
+        if (dx !== 0) {
+         this.direction = dx < 0 ? -1 : 1;
+     }
 
-        this.x += (mouseX - this.x) * this.speed;
-        this.y += (mouseY - this.y) * this.speed;
-        this.x = Math.max(0, Math.min(this.x, CONFIG.CANVAS_WIDTH - this.width));
-        this.y = Math.max(0, Math.min(this.y, CONFIG.CANVAS_HEIGHT - this.height));
-        this.render();
-    }
+         this.x += (mouseX - this.x) * this.speed;
+         this.y += (mouseY - this.y) * this.speed;
+         this.x = Math.max(0, Math.min(this.x, CONFIG.CANVAS_WIDTH - this.width));
+         this.y = Math.max(0, Math.min(this.y, CONFIG.CANVAS_HEIGHT - this.height));
+         this.render();
+     }
+
 
   
 
