@@ -60,8 +60,8 @@ export default class EnemyFish extends Fish {
             this.y += vy;
         }
 
-        // keep inside bounds
-        this.x = Math.max(0, Math.min(this.x, CONFIG.CANVAS_WIDTH - this.width));
+        // Only keep Y inside bounds (vertical movement still bounded)
+        // X can go off-screen freely (open ocean)
         this.y = Math.max(0, Math.min(this.y, CONFIG.CANVAS_HEIGHT - this.height));
 
         this.render();
