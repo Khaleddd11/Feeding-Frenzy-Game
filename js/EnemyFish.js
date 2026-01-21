@@ -21,8 +21,11 @@ export default class EnemyFish extends Fish {
         this.direction = direction;
         this.directionVertical = directionVertical;
         this.imgSrc = imgSrc;
+        this.weight = weight;
         this.level = level;
         this.speed = 1.2 * level;
+
+        this.updateSprite();
 
         // random target point inside the container
         this.pickNewTarget();
