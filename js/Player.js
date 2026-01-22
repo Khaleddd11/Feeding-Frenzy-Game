@@ -22,30 +22,27 @@ export default class Player extends Fish {
         this.direction = 1;  
     }
 
-     update(mouseX, mouseY) {
-        const dx = mouseX - this.x;
+     update(mouthX, mouthY) {
+        const dx = mouthX - this.x;
 
         if (dx !== 0) {
          this.direction = dx < 0 ? -1 : 1;
      }
 
-         this.x += (mouseX - this.x) * this.speed;
-         this.y += (mouseY - this.y) * this.speed;
+         this.x += (mouthX - this.x) * this.speed;
+         this.y += (mouthY - this.y) * this.speed;
          this.x = Math.max(0, Math.min(this.x, CONFIG.CANVAS_WIDTH - this.width));
          this.y = Math.max(0, Math.min(this.y, CONFIG.CANVAS_HEIGHT - this.height));
          this.render();
      }
-
-
   
 
     grow() {
         this.score += CONFIG.PLAYER.EAT_POINTS; 
-        this.width += CONFIG.PLAYER.GROWTH_WIDTH;
-        this.height += CONFIG.PLAYER.GROWTH_HEIGHT;
 
         const oldLevel = this.level;
 
+        // Check for level up
         if (this.score >= CONFIG.THRESHOLD.LARGE) {
             this.level = CONFIG.SIZE.LARGE;
         } else if (this.score >= CONFIG.THRESHOLD.MEDIUM) {
@@ -55,9 +52,33 @@ export default class Player extends Fish {
         }
 
         if (this.level !== oldLevel) {
+            // Size jumps to match enemy sizes at each level
+            const sizeMap = [
+                { width: 55, height: 45 },    // Level 0 - smaller than tiny-fry
+                { width: 110, height: 70 },   // Level 1 - can eat swift-minnow
+                { width: 155, height: 100 },  // Level 2 - can eat spotted-reef
+                { width: 200, height: 130 }   // Level 3 - can eat hunter, ready for apex
+            ];
+            
+            this.width = sizeMap[this.level].width;
+            this.height = sizeMap[this.level].height;
             this.element.src = this.images[this.level];
-            this.updateSprite();
+        } else {
+            // Small growth per eat (within same level)
+            this.width += 1;
+            this.height += 0.8;
         }
+        
+        this.openMouth();        
         this.render();
+    }
+
+    openMouth() {
+        const currentSrc = this.element.src;
+        this.element.src = currentSrc.replace('_closed', '_open');
+        
+        setTimeout(() => {
+            this.element.src = this.element.src.replace('_open', '_closed');
+        }, 200);
     }
 }

@@ -2,14 +2,16 @@ import Fish from './Fish.js';
 import { CONFIG } from '../config/config.js';
 
 export default class EnemyFish extends Fish {
-    constructor(x, y, imgSrc, weight, direction, directionVertical, level = 1) {
-        // Calculate starting X position based on direction BEFORE calling super
+    constructor(x, y, imgSrc, weight, direction, directionVertical, level = 1, useExactPosition = false) {
+        // Calculate size based on weight
         const width = 100 * weight;
         const height = 60 * weight;
         
-        // Always spawn based on direction: left = from right edge, right = from left edge
+        // Calculate starting X position unless exact position is requested
         let startX;
-        if (direction === "left") {
+        if (useExactPosition) {
+            startX = x;  // Use exact x for apex/special spawns
+        } else if (direction === "left") {
             startX = CONFIG.CANVAS_WIDTH + width;
         } else {
             startX = -width;
@@ -23,7 +25,13 @@ export default class EnemyFish extends Fish {
         this.imgSrc = imgSrc;
         this.weight = weight;
         this.level = level;
-        this.speed = 1.2 * level;
+        
+        // smaller fish are FASTER
+        const speedMap = [1.8, 1.4, 1.0, 0.7];
+        this.speed = speedMap[level] || 1.0;
+
+        // for debug
+        // this.fishName = imgSrc.split('/').pop().split('_')[0];
 
         this.updateSprite();
 
@@ -74,5 +82,16 @@ export default class EnemyFish extends Fish {
         } else {
             this.element.src = currentSrc.replace('_left_', '_right_');
         }
+    }
+
+    openMouth() {
+        const currentSrc = this.element.src;
+        this.element.src = currentSrc.replace('_closed.png', '_open.png');
+        
+        setTimeout(() => {
+            if (this.element) {  // if still exists
+                this.element.src = this.element.src.replace('_open.png', '_closed.png');
+            }
+        }, 200);
     }
 }

@@ -3,11 +3,11 @@ export const CONFIG = {
     CANVAS_HEIGHT: 700,
 
     PLAYER: {
-        START_WIDTH: 60,
-        START_HEIGHT: 50,
+        START_WIDTH: 55,
+        START_HEIGHT: 45,
         ACCELERATION: 0.1,
-        GROWTH_WIDTH: 5,
-        GROWTH_HEIGHT: 4,
+        GROWTH_WIDTH: 2,
+        GROWTH_HEIGHT: 1.5,
         EAT_POINTS: 10 
     },
 
