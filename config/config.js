@@ -11,6 +11,8 @@ export const CONFIG = {
         EAT_POINTS: 10 
     },
 
+    DIRECTION: { RIGHT: 1, LEFT: -1 },
+
     SIZE: { TINY: 0, SMALL: 1, MEDIUM: 2, LARGE: 3 },
 
     THRESHOLD: { 

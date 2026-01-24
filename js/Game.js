@@ -24,12 +24,10 @@ export default class Game {
     this.enemies = [];
     this.spawner = new Spawner();
 
-    // Spawn config - time-based for accurate timing
     this.lastSpawnTime = 0;
     this.spawnInterval = 2000; // 2 seconds
     this.maxEnemies = 6;       // Balanced - not too crowded, not too empty
 
-    // track spawn distribution
     this.spawnStats = { 0: 0, 1: 0, 2: 0, 3: 0 };
 
     // Create simple progress bar
@@ -98,9 +96,8 @@ export default class Game {
       this.enemies.push(apex);
     }
     
-    // Check collisions
-    this.checkPlayerCollisions();  // Player vs enemies
-    this.checkEnemyCollisions();   // Enemies vs enemies
+    this.checkPlayerCollisions();
+    this.checkEnemyCollisions();
   }
 
   cleanupOffscreenEnemies() {
@@ -123,9 +120,7 @@ export default class Game {
     for (let i = this.enemies.length - 1; i >= 0; i--) {
       const enemy = this.enemies[i];
       const enemyCenterX = enemy.x + enemy.width / 2;
-      // const enemyCenterY = enemy.y + enemy.height / 2;
 
-      // Smaller hitbox - shrink by 40% on each side for fairer collisions
       const tolerance = 0.4;
       const playerLeft = player.x + player.width * tolerance;
       const playerRight = player.x + player.width * (1 - tolerance);
@@ -148,8 +143,8 @@ export default class Game {
       // player can only eat enemies at or below their level
       if (player.level >= enemy.level) {
         const isFacing = 
-          (player.direction === 1 && enemyCenterX > playerCenterX) ||   // facing right
-          (player.direction === -1 && enemyCenterX < playerCenterX);    // facing left
+          (player.direction === CONFIG.DIRECTION.RIGHT && enemyCenterX > playerCenterX) ||
+          (player.direction === CONFIG.DIRECTION.LEFT && enemyCenterX < playerCenterX);
 
         if (isFacing) {
           const previousLevel = player.level;  // Track level before eating
@@ -168,7 +163,6 @@ export default class Game {
             }
           }
           
-          // Check win condition
           if (player.score >= CONFIG.THRESHOLD.WIN) {
             this.win();
             return;
@@ -239,14 +233,12 @@ export default class Game {
         }
 
         // Direction check: big fish must be FACING the small fish
-        // If big fish faces right, small fish must be to its right (smallFish.x > bigFish.x)
-        // If big fish faces left, small fish must be to its left (smallFish.x < bigFish.x)
         const bigFishCenter = bigFish.x + bigFish.width / 2;
         const smallFishCenter = smallFish.x + smallFish.width / 2;
         
         const isFacingSmallFish = 
-          (bigFish.direction === 'right' && smallFishCenter > bigFishCenter) ||
-          (bigFish.direction === 'left' && smallFishCenter < bigFishCenter);
+          (bigFish.direction === CONFIG.DIRECTION.RIGHT && smallFishCenter > bigFishCenter) ||
+          (bigFish.direction === CONFIG.DIRECTION.LEFT && smallFishCenter < bigFishCenter);
         
         if (!isFacingSmallFish) continue; // Can't eat from behind
 
