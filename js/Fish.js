@@ -11,21 +11,19 @@ export default class Fish {
         this.element = document.createElement('img');
         this.element.src = this.imageSrc;
         this.element.style.position = 'absolute';
-        this.element.style.pointerEvents = "none";
+        this.element.style.pointerEvents = 'none';
         this.element.style.width = this.width + 'px';
         this.element.style.height = this.height + 'px';
-        
-        document.querySelector("#game").appendChild(this.element);
+
+        document.querySelector('#game').appendChild(this.element);
     }
 
     render() {
         this.element.style.left = `${this.x}px`;
         this.element.style.top = `${this.y}px`;
-        
         this.element.style.width = `${this.width}px`;
         this.element.style.height = `${this.height}px`;
-        
-         this.element.style.transform = this.direction === -1 ? "scaleX(-1)" : "scaleX(1)";
+        this.element.style.transform = this.direction < 0 ? 'scaleX(-1)' : 'scaleX(1)';
     }
 
     isColliding(other) {
@@ -40,14 +38,15 @@ export default class Fish {
     destroy() {
         this.element.remove();
     }
+
+    openMouth() {
+        const currentSrc = this.element.src;
+        this.element.src = currentSrc.replace('_closed', '_open');
+
+        setTimeout(() => {
+            if (this.element) {
+                this.element.src = this.element.src.replace('_open', '_closed');
+            }
+        }, 200);
+    }
 }
-
-
-
-
-
-
-
-
-
-
