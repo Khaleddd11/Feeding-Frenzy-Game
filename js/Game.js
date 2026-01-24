@@ -25,8 +25,8 @@ export default class Game {
     this.spawner = new Spawner();
 
     this.lastSpawnTime = 0;
-    this.spawnInterval = 2000; // 2 seconds
-    this.maxEnemies = 6;       // Balanced - not too crowded, not too empty
+    this.spawnInterval = 1500; // 2 seconds
+    this.maxEnemies = 8;       // Balanced - not too crowded, not too empty
 
     this.spawnStats = { 0: 0, 1: 0, 2: 0, 3: 0 };
 
@@ -38,16 +38,17 @@ export default class Game {
     
     this.setupInput();
   }
-  
-  spawnEnemy() {
-    if (this.enemies.length >= this.maxEnemies) return;
-
-    // Pass player level to spawn enemies progressively
-    const enemy = this.spawner.spawn(this.player.level);
-    this.enemies.push(enemy);
-    
-    this.spawnStats[enemy.level]++;
-  }
+ spawnEnemy() {
+    while (this.enemies.length < this.maxEnemies) {
+        const enemy = this.spawner.spawn(this.player.level);
+        if (enemy) {
+            this.enemies.push(enemy);
+            this.spawnStats[enemy.level]++;
+        } else {
+            break;
+        }
+    }
+}
   
   setupInput() {
     this.container.addEventListener('mousemove', (e) => {
@@ -71,34 +72,46 @@ export default class Game {
     }
   }
   
-  update() {
+ update() {
+    this.maxEnemies = 8 + (this.player.level * 4);
+    this.spawnInterval = Math.max(700, 1600 - (this.player.level * 300));
     this.player.update(this.mouseX, this.mouseY);
     
-    // Spawn new enemies
     const currentTime = Date.now();
     if (currentTime - this.lastSpawnTime >= this.spawnInterval) {
-      this.spawnEnemy();
-      this.lastSpawnTime = currentTime;
+        this.spawnEnemy(); 
+        this.lastSpawnTime = currentTime;
     }
 
-    // Update all enemies
     for (let i = this.enemies.length - 1; i >= 0; i--) {
-      this.enemies[i].update();
-    }
-    
-    // Clean up enemies that left the screen
-    this.cleanupOffscreenEnemies();
+        const enemy = this.enemies[i];
+        enemy.update();
 
-    // Spawn APEX when player reaches Level 3
-    if (this.player.level === CONFIG.SIZE.LARGE && !this.apexSpawned) {
-      this.apexSpawned = true;
-      const apex = this.spawner.spawnApex();
-      this.enemies.push(apex);
+        if (this.isOffscreen(enemy)) {
+            enemy.destroy();
+            this.enemies.splice(i, 1);
+        }
     }
-    
-    this.checkPlayerCollisions();
+
+    if (this.player.level === CONFIG.SIZE.LARGE && !this.apexSpawned) {
+        this.apexSpawned = true;
+        const apex = this.spawner.spawnApex();
+        this.enemies.push(apex);
+    }
+
+    this.checkPlayerCollisions(); 
     this.checkEnemyCollisions();
-  }
+    this.updateProgressBar();
+}
+
+isOffscreen(enemy) {
+    return (
+        enemy.x < -200 || 
+        enemy.x > CONFIG.CANVAS_WIDTH + 200 ||
+        enemy.y < -100 ||
+        enemy.y > CONFIG.CANVAS_HEIGHT + 100
+    );
+}
 
   cleanupOffscreenEnemies() {
     for (let i = this.enemies.length - 1; i >= 0; i--) {
@@ -110,72 +123,29 @@ export default class Game {
     }
   }
 
-  checkPlayerCollisions() {
+checkPlayerCollisions() {
     if (this.state !== 'PLAYING') return;
 
-    const player = this.player;
-    const playerCenterX = player.x + player.width / 2;
-    const playerCenterY = player.y + player.height / 2;
-
     for (let i = this.enemies.length - 1; i >= 0; i--) {
-      const enemy = this.enemies[i];
-      const enemyCenterX = enemy.x + enemy.width / 2;
+        const enemy = this.enemies[i];
 
-      const tolerance = 0.4;
-      const playerLeft = player.x + player.width * tolerance;
-      const playerRight = player.x + player.width * (1 - tolerance);
-      const playerTop = player.y + player.height * tolerance;
-      const playerBottom = player.y + player.height * (1 - tolerance);
-
-      const enemyLeft = enemy.x + enemy.width * tolerance;
-      const enemyRight = enemy.x + enemy.width * (1 - tolerance);
-      const enemyTop = enemy.y + enemy.height * tolerance;
-      const enemyBottom = enemy.y + enemy.height * (1 - tolerance);
-
-      const isColliding = 
-        playerLeft < enemyRight &&
-        playerRight > enemyLeft &&
-        playerTop < enemyBottom &&
-        playerBottom > enemyTop;
-
-      if (!isColliding) continue;
-
-      // player can only eat enemies at or below their level
-      if (player.level >= enemy.level) {
-        const isFacing = 
-          (player.direction === CONFIG.DIRECTION.RIGHT && enemyCenterX > playerCenterX) ||
-          (player.direction === CONFIG.DIRECTION.LEFT && enemyCenterX < playerCenterX);
-
-        if (isFacing) {
-          const previousLevel = player.level;  // Track level before eating
-          
-          enemy.destroy();
-          this.enemies.splice(i, 1);
-          player.grow();
-          this.updateProgressBar();
-          
-          // If player leveled up, spawn the new enemy type!
-          if (player.level > previousLevel) {
-            const newEnemyLevel = player.level + 1;  // Spawn the new threat level
-            const newEnemy = this.spawner.spawnByLevel(newEnemyLevel);
-            if (newEnemy) {
-              this.enemies.push(newEnemy);
+        if (this.player.isColliding(enemy)) {
+            if (this.player.level >= enemy.level) {
+                enemy.destroy();
+                this.enemies.splice(i, 1);
+                this.player.grow();
+                this.updateProgressBar();
+                
+                if (this.player.score >= CONFIG.THRESHOLD.WIN) {
+                    this.win();
+                }
+            } else {
+                this.gameOver();
+                break;
             }
-          }
-          
-          if (player.score >= CONFIG.THRESHOLD.WIN) {
-            this.win();
-            return;
-          }
         }
-      } else {
-        // Enemy level is higher - GAME OVER
-        enemy.openMouth();
-        this.gameOver();
-        return;
-      }
     }
-  }
+}
 
   // testing
   gameOver() {
@@ -215,57 +185,25 @@ export default class Game {
     this.progressFill.style.background = colors[this.player.level] || colors[0];
   }
   
-  checkEnemyCollisions() {
+ checkEnemyCollisions() {
     for (let i = this.enemies.length - 1; i >= 0; i--) {
-      for (let j = this.enemies.length - 1; j > i; j--) {
-        const e1 = this.enemies[i];
-        const e2 = this.enemies[j];
+        for (let j = this.enemies.length - 1; j >= 0; j--) {
+            if (i === j) continue; 
 
-        let smallFish, bigFish;
-        if (e1.weight < e2.weight) {
-          smallFish = e1;
-          bigFish = e2;
-        } else if (e2.weight < e1.weight) {
-          smallFish = e2;
-          bigFish = e1;
-        } else {
-          continue; 
+            const fishA = this.enemies[i];
+            const fishB = this.enemies[j];
+
+            if (!fishA || !fishB) continue;
+
+            if (fishA.level > fishB.level && fishA.isColliding(fishB)) {
+                fishA.openMouth();
+                fishB.destroy();
+                this.enemies.splice(j, 1);
+                
+                if (j < i) i--; 
+                break; 
+            }
         }
-
-        // Direction check: big fish must be FACING the small fish
-        const bigFishCenter = bigFish.x + bigFish.width / 2;
-        const smallFishCenter = smallFish.x + smallFish.width / 2;
-        
-        const isFacingSmallFish = 
-          (bigFish.direction === CONFIG.DIRECTION.RIGHT && smallFishCenter > bigFishCenter) ||
-          (bigFish.direction === CONFIG.DIRECTION.LEFT && smallFishCenter < bigFishCenter);
-        
-        if (!isFacingSmallFish) continue; // Can't eat from behind
-
-        const horizontalTolerance = bigFish.width * 0.5; 
-        const horizontalOverlap = (
-          smallFish.x < bigFish.x + bigFish.width - horizontalTolerance &&
-          smallFish.x + smallFish.width > bigFish.x + horizontalTolerance
-        );
-
-        const verticalTolerance = bigFish.height * 0.5;
-        const verticalOverlap = (
-          smallFish.y < bigFish.y + bigFish.height - verticalTolerance &&
-          smallFish.y + smallFish.height > bigFish.y + verticalTolerance
-        );
-
-        if (horizontalOverlap && verticalOverlap) {
-          bigFish.openMouth();  // Big fish opens mouth when eating
-          smallFish.destroy();
-          if (smallFish === e1) {
-            this.enemies.splice(i, 1);
-            break; 
-          } else {
-            this.enemies.splice(j, 1);
-          }
-      
-        }
-      }
     }
-  }
+}
 }

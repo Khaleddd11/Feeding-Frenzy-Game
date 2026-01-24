@@ -20,5 +20,11 @@ export const CONFIG = {
         MEDIUM: 250, 
         LARGE: 450, 
         WIN: 650 
-    }
+    },
+      sizeMap : [
+                { width: 55, height: 45 },
+                { width: 110, height: 70 },
+                { width: 155, height: 100 },
+                { width: 200, height: 130 }
+            ]
 };

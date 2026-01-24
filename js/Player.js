@@ -47,15 +47,8 @@ export default class Player extends Fish {
         }
 
         if (this.level !== oldLevel) {
-            const sizeMap = [
-                { width: 55, height: 45 },
-                { width: 110, height: 70 },
-                { width: 155, height: 100 },
-                { width: 200, height: 130 }
-            ];
-
-            this.width = sizeMap[this.level].width;
-            this.height = sizeMap[this.level].height;
+            this.width = CONFIG.sizeMap[this.level].width;
+            this.height = CONFIG.sizeMap[this.level].height;
             this.element.src = this.images[this.level];
         } else {
             this.width += 1;

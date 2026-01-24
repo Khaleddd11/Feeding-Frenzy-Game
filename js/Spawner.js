@@ -11,19 +11,37 @@ export default class Spawner {
         ];
     }
 
-    selectEnemyType(playerLevel) {
-        const maxLevel = playerLevel + 1;
-        const availableTypes = this.enemyTypes.filter(t => t.level <= maxLevel);
-        const totalWeight = availableTypes.reduce((sum, t) => sum + t.spawnWeight, 0);
+  selectEnemyType(playerLevel) {
+    const availableTypes = this.enemyTypes.filter(t => t.level <= playerLevel + 1);
 
-        let random = Math.random() * totalWeight;
-        for (const type of availableTypes) {
-            random -= type.spawnWeight;
-            if (random <= 0) return type;
+    const weightedTypes = availableTypes.map(type => {
+        let weight = type.spawnWeight;
+
+        if (type.level === playerLevel) {
+            weight = type.spawnWeight * 1.5; 
+        } 
+        else if (type.level === playerLevel + 1) {
+            weight = type.spawnWeight * 1.0;
+        } 
+        else if (type.level < playerLevel) {
+            const levelDiff = playerLevel - type.level;
+            const reductionFactor = Math.pow(0.4, levelDiff); 
+            weight = type.spawnWeight * reductionFactor;
         }
 
-        return availableTypes[0];
+        return { ...type, currentWeight: weight };
+    });
+
+    const totalWeight = weightedTypes.reduce((sum, t) => sum + t.currentWeight, 0);
+    let random = Math.random() * totalWeight;
+
+    for (const type of weightedTypes) {
+        random -= type.currentWeight;
+        if (random <= 0) return type;
     }
+
+    return availableTypes[0];
+}
 
     getEnemyByLevel(level) {
         return this.enemyTypes.find(t => t.level === level) || null;
