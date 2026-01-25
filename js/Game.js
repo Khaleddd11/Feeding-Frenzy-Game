@@ -69,18 +69,46 @@ export default class Game {
     
     // Endless Mode properties
     this.isEndlessMode = false;
-    this.endlessStartScore = 0;  // Score when endless mode started
-    this.endlessApexCount = 0;   // Number of Apexes spawned in endless
+    this.endlessStartScore = 0;
+    this.endlessApexCount = 0;
     this.endlessSpeedMultiplier = 1.0;
+    
+    // Sound control properties
+    this.musicMuted = false;
+    this.sfxMuted = false;
     
     this.createProgressBar();
     this.setupInput();
     this.setupStory();
     this.setupEndScreen();
+    this.setupSoundControls();
+  }
+
+  setupSoundControls() {
+    const musicBtn = document.getElementById('music-toggle');
+    const sfxBtn = document.getElementById('sfx-toggle');
+    
+    musicBtn.addEventListener('click', () => {
+      this.musicMuted = !this.musicMuted;
+      musicBtn.classList.toggle('muted', this.musicMuted);
+      musicBtn.querySelector('.sound-on').style.display = this.musicMuted ? 'none' : 'inline';
+      musicBtn.querySelector('.sound-off').style.display = this.musicMuted ? 'inline' : 'none';
+      
+      if (this.backgroundMusic) {
+        this.backgroundMusic.muted = this.musicMuted;
+      }
+    });
+    
+    sfxBtn.addEventListener('click', () => {
+      this.sfxMuted = !this.sfxMuted;
+      sfxBtn.classList.toggle('muted', this.sfxMuted);
+      sfxBtn.querySelector('.sfx-on').style.display = this.sfxMuted ? 'none' : 'inline';
+      sfxBtn.querySelector('.sfx-off').style.display = this.sfxMuted ? 'inline' : 'none';
+    });
   }
 
   playEatSound() {
-    if (!this.eatSound) return;
+    if (!this.eatSound || this.sfxMuted) return;
     this.eatSound.currentTime = 0;
     this.eatSound.play().catch(() => {});
   }
@@ -113,19 +141,19 @@ export default class Game {
   }
 
   playGameOverSound() {
-    if (!this.gameOverSound) return;
+    if (!this.gameOverSound || this.sfxMuted) return;
     this.gameOverSound.currentTime = 0;
     this.gameOverSound.play().catch(() => {});
   }
 
   playWinSound() {
-    if (!this.winSound) return;
+    if (!this.winSound || this.sfxMuted) return;
     this.winSound.currentTime = 0;
     this.winSound.play().catch(() => {});
   }
 
   playBombSpawnSound() {
-    if (!this.bombSpawnSound) return;
+    if (!this.bombSpawnSound || this.sfxMuted) return;
     this.bombSpawnSound.currentTime = 0;
     this.bombSpawnSound.play().catch(() => {});
   }
@@ -284,6 +312,12 @@ spawnBomb() {
     
     // Reset progress bar
     this.progressFill.style.background = 'linear-gradient(90deg, #4CAF50, #8BC34A)';
+    
+    // Restart background music from beginning
+    if (this.backgroundMusic) {
+      this.backgroundMusic.currentTime = 0;
+      this.startBackgroundMusic();
+    }
     
     // Start game
     this.start();
@@ -558,7 +592,7 @@ update() {
     }
 }
 
-  gameOver(message = "GAME OVER") { 
+  gameOver(message = "You were eaten!") { 
     this.state = 'GAME_OVER';
     const highScore = this.updateHighScore();
     this.stopBackgroundMusic();
@@ -566,9 +600,15 @@ update() {
     this.player.hide();
     this.hideThoughtBubble();
     document.getElementById('end-title').textContent = 'GAME OVER';
-    document.getElementById('end-msg').innerHTML = `${message}<br>Final Score: ${this.player.score}<br>High Score: ${highScore}`;
+    document.getElementById('end-msg').innerHTML = `
+      <div class="death-reason">${message}</div>
+      <div class="score-display">
+        <div class="score-item"><span class="score-label">🐟 Final Score</span><span class="score-value">${this.player.score}</span></div>
+        <div class="score-item"><span class="score-label">🏆 High Score</span><span class="score-value">${highScore}</span></div>
+      </div>
+    `;
     document.getElementById('end-screen').classList.remove('hidden');
-}
+  }
 
   win() {
     this.state = 'WIN';
@@ -585,7 +625,13 @@ update() {
     setTimeout(() => {
       announcement.remove();
       document.getElementById('end-title').textContent = 'VICTORY!';
-      document.getElementById('end-msg').innerHTML = `You are the Ocean King!<br>Final Score: ${this.player.score}<br>High Score: ${highScore}`;
+      document.getElementById('end-msg').innerHTML = `
+        <div class="death-reason">You are the Ocean King! 👑</div>
+        <div class="score-display">
+          <div class="score-item"><span class="score-label">🐟 Final Score</span><span class="score-value">${this.player.score}</span></div>
+          <div class="score-item"><span class="score-label">🏆 High Score</span><span class="score-value">${highScore}</span></div>
+        </div>
+      `;
       document.getElementById('end-screen').classList.remove('hidden');
       
       // Show Endless Mode button after winning!

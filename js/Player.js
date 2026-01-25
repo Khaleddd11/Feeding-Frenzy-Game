@@ -28,6 +28,8 @@ export default class Player extends Fish {
 
     playLevelUpSound() {
         if (!this.levelUpSound) return;
+        // Check if game has sfx muted
+        if (window.game && window.game.sfxMuted) return;
         this.levelUpSound.currentTime = 0;
         this.levelUpSound.play().catch(() => {});
     }
