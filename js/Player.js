@@ -17,6 +17,10 @@ export default class Player extends Fish {
         this.score = 0;
         this.speed = CONFIG.PLAYER.ACCELERATION;
         this.direction = CONFIG.DIRECTION.RIGHT;
+        
+        // Store initial values for reset
+        this.initialX = x;
+        this.initialY = y;
     }
 
     update(mouthX, mouthY) {
@@ -50,12 +54,37 @@ export default class Player extends Fish {
             this.width = CONFIG.sizeMap[this.level].width;
             this.height = CONFIG.sizeMap[this.level].height;
             this.element.src = this.images[this.level];
+            
+            // Show level announcement
+            this.showLevelAnnouncement(this.level + 1);
         } else {
             this.width += 1;
             this.height += 0.8;
         }
 
         this.openMouth();
+        this.render();
+    }
+    
+    showLevelAnnouncement(level) {
+        const announcement = document.createElement('div');
+        announcement.className = 'level-announcement';
+        announcement.textContent = `LEVEL ${level}`;
+        document.querySelector('#game').appendChild(announcement);
+        
+        setTimeout(() => {
+            announcement.remove();
+        }, 2000);
+    }
+    
+    reset() {
+        this.score = 0;
+        this.level = CONFIG.SIZE.TINY;
+        this.x = this.initialX;
+        this.y = this.initialY;
+        this.width = CONFIG.PLAYER.START_WIDTH;
+        this.height = CONFIG.PLAYER.START_HEIGHT;
+        this.element.src = this.images[CONFIG.SIZE.TINY];
         this.render();
     }
 }
