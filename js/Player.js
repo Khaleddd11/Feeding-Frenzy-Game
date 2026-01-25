@@ -85,6 +85,19 @@ export default class Player extends Fish {
         this.width = CONFIG.PLAYER.START_WIDTH;
         this.height = CONFIG.PLAYER.START_HEIGHT;
         this.element.src = this.images[CONFIG.SIZE.TINY];
+        this.show(); // Make sure player is visible on restart
         this.render();
+    }
+    
+    hide() {
+        if (this.element) {
+            this.element.style.display = 'none';
+        }
+    }
+    
+    show() {
+        if (this.element) {
+            this.element.style.display = 'block';
+        }
     }
 }

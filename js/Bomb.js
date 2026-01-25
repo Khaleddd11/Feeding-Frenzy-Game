@@ -23,7 +23,7 @@ export default class Bomb {
         this.element.style.width = this.width + 'px';
         this.element.style.height = this.height + 'px';
         this.element.style.position = 'fixed';
-        this.element.style.zIndex = '1000';
+        this.element.style.zIndex = '10';
         
         container.appendChild(this.element);
         

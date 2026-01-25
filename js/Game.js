@@ -25,6 +25,7 @@ this.spawnStats = { 0:0, 1:0, 2:0, 3:0, 4:0 }
     ];
     
     this.player = new Player(this.width / 2, this.height / 2, playerImages);
+    this.player.hide(); // Hide player until game starts
     this.enemies = [];
     this.sharks = [];
     this.bombs = [];
@@ -150,6 +151,7 @@ spawnBomb() {
   
   start() {
     this.state = 'PLAYING';
+    this.player.show(); // Show player when game starts
     document.getElementById('ui-layer').classList.remove('hidden'); 
     this.updateUI();
     
@@ -310,6 +312,7 @@ isOffscreen(enemy) {
                 
                 if (this.player.score >= CONFIG.THRESHOLD.WIN) this.win();
             } else {
+                enemy.openMouth();
                 this.gameOver();
                 break;
             }
@@ -385,6 +388,7 @@ isOffscreen(enemy) {
 
   gameOver(message = "GAME OVER") { 
     this.state = 'GAME_OVER';
+    this.player.hide();
     document.getElementById('end-title').textContent = 'GAME OVER';
     document.getElementById('end-msg').innerHTML = `${message}<br>Final Score: ${this.player.score}`;
     document.getElementById('end-screen').classList.remove('hidden');

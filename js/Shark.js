@@ -32,7 +32,7 @@ export default class Shark {
         this.warningElement.style.position = 'fixed';
         this.warningElement.style.left = this.warningX + 'px';
         this.warningElement.style.top = this.warningY + 'px';
-        this.warningElement.style.zIndex = '9999';
+        this.warningElement.style.zIndex = '15';
         
         const warningImg = this.warningElement.querySelector('img');
         if (direction === CONFIG.DIRECTION.LEFT) {
@@ -53,7 +53,7 @@ export default class Shark {
         this.warningText.style.fontWeight = 'bold';
         this.warningText.style.color = 'red';
         this.warningText.style.textShadow = '2px 2px 4px black';
-        this.warningText.style.zIndex = '10000';
+        this.warningText.style.zIndex = '15';
         
         container.appendChild(this.warningText);
         
@@ -95,7 +95,7 @@ export default class Shark {
         this.element.style.width = this.width + 'px';
         this.element.style.height = this.height + 'px';
         this.element.style.position = 'fixed';
-        this.element.style.zIndex = '999';
+        this.element.style.zIndex = '10';
         
         gameContainer.appendChild(this.element);
         

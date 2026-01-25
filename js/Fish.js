@@ -15,7 +15,7 @@ export default class Fish {
         this.element.style.pointerEvents = 'none';
         this.element.style.width = this.width + 'px';
         this.element.style.height = this.height + 'px';
-        this.element.style.zIndex = '1000';
+        this.element.style.zIndex = '10';
         this.element.style.imageRendering = 'auto';
         this.element.style.display = 'block';
 
@@ -42,8 +42,7 @@ export default class Fish {
         this.element.style.width = `${this.width}px`;
         this.element.style.height = `${this.height}px`;
         this.element.style.transform = this.direction < 0 ? 'scaleX(-1)' : 'scaleX(1)';
-        this.element.style.zIndex = '1000';
-        this.element.style.display = 'block';
+        this.element.style.zIndex = '10';
         this.element.style.position = 'fixed';
     }
 
