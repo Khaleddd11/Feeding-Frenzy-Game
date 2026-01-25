@@ -22,15 +22,6 @@ export default class Fish {
         const container = document.querySelector('#game-container') || document.querySelector('#game');
         container.appendChild(this.element);
         
-        console.log('Fish created:', {
-            src: this.imageSrc,
-            x: this.x,
-            y: this.y,
-            width: this.width,
-            height: this.height
-        });
-        
-        // Force a render
         setTimeout(() => this.render(), 0);
     }
 

@@ -57,8 +57,6 @@ export default class Shark {
         
         container.appendChild(this.warningText);
         
-        console.log('Shark warning created at:', this.warningX, this.warningY);
-        
         // After warning, spawn the actual shark
         setTimeout(() => {
             if (this.warningElement && this.warningElement.parentNode) {
@@ -76,7 +74,6 @@ export default class Shark {
         const gameContainer = container || window.gameContainer || document.querySelector('#game') || document.querySelector('#game-container');
         
         if (!gameContainer) {
-            console.error('Cannot spawn shark - container not found!');
             return;
         }
         
@@ -99,7 +96,6 @@ export default class Shark {
         
         gameContainer.appendChild(this.element);
         
-        console.log('Shark spawned at:', this.x, this.y);
         this.render();
     }
 

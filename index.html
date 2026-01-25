@@ -4,7 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Feeding Frenzy</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Roboto:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
       :root {
         --primary: #00e5ff;
@@ -24,7 +27,7 @@
         min-height: 100vh;
         background: #000;
         overflow: hidden;
-        font-family: 'Roboto', sans-serif;
+        font-family: "Roboto", sans-serif;
         color: white;
       }
 
@@ -134,7 +137,7 @@
       }
 
       .stats {
-        font-family: 'Fredoka One', cursive;
+        font-family: "Fredoka One", cursive;
         font-size: 1.2rem;
         background: rgba(0, 0, 0, 0.6);
         padding: 10px 20px;
@@ -192,7 +195,7 @@
       }
 
       #story-title {
-        font-family: 'Fredoka One', cursive;
+        font-family: "Fredoka One", cursive;
         font-size: 2rem;
         margin-bottom: 20px;
         text-align: center;
@@ -284,7 +287,7 @@
         border: none;
         cursor: pointer;
         font-weight: bold;
-        font-family: 'Roboto', sans-serif;
+        font-family: "Roboto", sans-serif;
         font-size: 1rem;
         pointer-events: all;
         transition: transform 0.2s;
@@ -321,7 +324,7 @@
       .loading-center {
         position: relative;
         text-align: center;
-        font-family: 'Fredoka One', cursive;
+        font-family: "Fredoka One", cursive;
         font-size: 4rem;
         letter-spacing: 6px;
         color: var(--accent);
@@ -339,7 +342,7 @@
       .bub {
         position: absolute;
         bottom: -100px;
-        background-image: url('assets/characters/bubble.png');
+        background-image: url("assets/characters/bubble.png");
         background-size: contain;
         background-repeat: no-repeat;
         opacity: 0.9;
@@ -554,10 +557,12 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        font-family: 'Fredoka One', cursive;
+        font-family: "Fredoka One", cursive;
         font-size: 2.5rem;
         color: #ff0000;
-        text-shadow: 0 0 20px rgba(255, 0, 0, 1), 0 0 40px rgba(255, 0, 0, 0.8);
+        text-shadow:
+          0 0 20px rgba(255, 0, 0, 1),
+          0 0 40px rgba(255, 0, 0, 0.8);
         z-index: 160;
         animation: warningTextPulse 0.6s infinite;
         pointer-events: none;
@@ -565,12 +570,13 @@
       }
 
       @keyframes warningTextPulse {
-        0%, 100% { 
-          opacity: 1; 
+        0%,
+        100% {
+          opacity: 1;
           transform: translate(-50%, -50%) scale(1);
         }
-        50% { 
-          opacity: 0.6; 
+        50% {
+          opacity: 0.6;
           transform: translate(-50%, -50%) scale(1.1);
         }
       }
@@ -581,10 +587,12 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        font-family: 'Fredoka One', cursive;
+        font-family: "Fredoka One", cursive;
         font-size: 5rem;
         color: var(--accent);
-        text-shadow: 0 0 30px rgba(255, 235, 59, 1), 0 0 60px rgba(255, 235, 59, 0.8);
+        text-shadow:
+          0 0 30px rgba(255, 235, 59, 1),
+          0 0 60px rgba(255, 235, 59, 0.8);
         z-index: 180;
         animation: levelAnnounce 2s forwards;
         pointer-events: none;
@@ -622,7 +630,7 @@
       }
 
       #end-title {
-        font-family: 'Fredoka One', cursive;
+        font-family: "Fredoka One", cursive;
         font-size: 3rem;
         margin-bottom: 20px;
         color: var(--accent);
@@ -673,8 +681,27 @@
       }
 
       @keyframes warningBlink {
-        0%, 100% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.4; transform: scale(1.15); }
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.4;
+          transform: scale(1.15);
+        }
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+          transform: scale(1);
+        }
+        50% {
+          box-shadow: 0 0 25px rgba(255, 165, 0, 0.8);
+          transform: scale(1.05);
+        }
       }
     </style>
   </head>
@@ -682,7 +709,7 @@
     <div id="game">
       <!-- Video Background -->
       <video id="game-video-bg" autoplay muted loop playsinline preload="auto">
-        <source src="assets/backgrounds/background.webm" type="video/webm">
+        <source src="assets/backgrounds/background.webm" type="video/webm" />
         Your browser does not support the video tag.
       </video>
 
@@ -707,12 +734,11 @@
         <div class="stats">
           <div>SCORE: <span id="score-val">0</span></div>
           <div>HIGH SCORE: <span id="high-score-val">0</span></div>
-          <div>LEVEL: <span id="level-name">Tiny Fish</span></div>
         </div>
 
         <div class="target-indicator">
           <p>HUNT THIS</p>
-          <img id="target-img" src="" alt="target">
+          <img id="target-img" src="" alt="target" />
           <span id="target-name"></span>
         </div>
       </div>
@@ -730,7 +756,7 @@
           <h1 id="story-title">THE DEPTHS</h1>
 
           <div class="story-content">
-            <img id="story-avatar" src="" alt="character">
+            <img id="story-avatar" src="" alt="character" />
             <p id="story-text"></p>
           </div>
 
@@ -780,7 +806,26 @@
       <div id="end-screen" class="hidden">
         <h1 id="end-title">GAME OVER</h1>
         <p id="end-msg">Try again!</p>
-        <button id="restart-btn" class="primary-btn">PLAY AGAIN</button>
+        <div
+          style="
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+          "
+        >
+          <button id="restart-btn" class="primary-btn">PLAY AGAIN</button>
+          <button
+            id="endless-btn"
+            class="primary-btn hidden"
+            style="
+              background: linear-gradient(135deg, #ff6b6b, #ffa500);
+              animation: pulse 1.5s infinite;
+            "
+          >
+            🔥 ENDLESS MODE
+          </button>
+        </div>
       </div>
     </div>
 
