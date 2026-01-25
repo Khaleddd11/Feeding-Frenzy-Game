@@ -5,6 +5,17 @@ import Shark from './Shark.js';
 import Bomb from './Bomb.js';
 import { CONFIG } from '../config/config.js';
 
+// Score popup effect when eating fish
+function spawnEatEffect(x, y, points) {
+    const container = document.querySelector('#game');
+    const popup = document.createElement('div');
+    popup.className = 'score-popup';
+    popup.textContent = `+${points}`;
+    popup.style.cssText = `position: fixed; left: ${x}px; top: ${y}px; z-index: 100;`;
+    container.appendChild(popup);
+    setTimeout(() => popup.remove(), 800);
+}
+
 export default class Game {
   constructor(container) {
     this.container = container;
@@ -150,6 +161,7 @@ spawnBomb() {
   }
   
   start() {
+    console.log('START CALLED');
     this.state = 'PLAYING';
     this.player.show(); // Show player when game starts
     document.getElementById('ui-layer').classList.remove('hidden'); 
@@ -162,9 +174,58 @@ spawnBomb() {
     
     setTimeout(() => announcement.remove(), 2000);
     
+    // Show thought bubble with target fish
+    this.showThoughtBubble();
+    
     for(let i = 0; i < 5; i++) this.spawnEnemy();
     
     this.gameLoop();
+  }
+
+  showThoughtBubble() {
+    this.hideThoughtBubble();
+    
+    const targetData = this.spawner.enemyTypes[this.player.level];
+    if (!targetData || this.state !== 'PLAYING') return;
+    
+    this.bubble = document.createElement('div');
+    this.bubble.style.cssText = `
+      position: fixed;
+      background: #e8f5e9;
+      border: 3px solid #4caf50;
+      border-radius: 15px;
+      padding: 15px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      z-index: 99999;
+      pointer-events: none;
+      transform: translateX(-50%);
+      left: ${this.player.x + this.player.width / 2}px;
+      top: ${this.player.y - 100}px;
+    `;
+    this.bubble.innerHTML = `
+      <img src="assets/characters/${targetData.name}_right_closed.png" style="width: 60px;">
+      <span style="font-family: 'Fredoka One', cursive; font-size: 1.2rem; color: #2e7d32;">Yummy!</span>
+    `;
+    document.body.appendChild(this.bubble);
+    
+    // Follow player
+    this.bubbleInterval = setInterval(() => {
+      if (!this.bubble) return;
+      this.bubble.style.left = (this.player.x + this.player.width / 2) + 'px';
+      this.bubble.style.top = (this.player.y - 100) + 'px';
+    }, 16);
+    
+    setTimeout(() => this.hideThoughtBubble(), 3000);
+  }
+  
+  hideThoughtBubble() {
+    if (this.bubbleInterval) clearInterval(this.bubbleInterval);
+    if (this.bubble) this.bubble.remove();
+    this.bubble = null;
+    this.bubbleInterval = null;
   }
 
   gameLoop() {
@@ -304,21 +365,33 @@ isOffscreen(enemy) {
 
         if (this.player.isColliding(enemy)) {
             if (this.player.level >= enemy.level) {
+                // Spawn particle effects
+                spawnEatEffect(enemy.x + enemy.width / 2, enemy.y + enemy.height / 2, CONFIG.PLAYER.EAT_POINTS);
+                
                 enemy.destroy();
                 this.enemies.splice(i, 1);
+                
+                const oldLevel = this.player.level;
                 this.player.grow();
+                
+                // Show thought bubble when level changes
+                if (this.player.level !== oldLevel) {
+                    this.showThoughtBubble();
+                }
+                
                 this.updateProgressBar();
                 this.updateUI();
                 
                 if (this.player.score >= CONFIG.THRESHOLD.WIN) this.win();
             } else {
                 enemy.openMouth();
-                this.gameOver();
+                setTimeout(() => this.gameOver(), 100); // Delay to show mouth animation
                 break;
             }
         }
     }
 }
+
 // checkPlayerCollisions() {
 //     if (this.state !== 'PLAYING') return;
 
@@ -389,6 +462,7 @@ isOffscreen(enemy) {
   gameOver(message = "GAME OVER") { 
     this.state = 'GAME_OVER';
     this.player.hide();
+    this.hideThoughtBubble();
     document.getElementById('end-title').textContent = 'GAME OVER';
     document.getElementById('end-msg').innerHTML = `${message}<br>Final Score: ${this.player.score}`;
     document.getElementById('end-screen').classList.remove('hidden');

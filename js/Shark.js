@@ -44,7 +44,7 @@ export default class Shark {
         // Create warning text
         this.warningText = document.createElement('div');
         this.warningText.className = 'shark-warning-text';
-        this.warningText.textContent = 'WARNING: Eng. Mahmoud is COMING!!';
+        this.warningText.textContent = 'WARNING: Shark is COMING!!';
         this.warningText.style.position = 'fixed';
         this.warningText.style.top = '50%';
         this.warningText.style.left = '50%';
