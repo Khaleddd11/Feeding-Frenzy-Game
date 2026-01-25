@@ -10,51 +10,72 @@ export default class Fish {
 
         this.element = document.createElement('img');
         this.element.src = this.imageSrc;
-        this.element.style.position = 'absolute';
+        this.element.className = 'fish';
+        this.element.style.position = 'fixed';
         this.element.style.pointerEvents = 'none';
         this.element.style.width = this.width + 'px';
         this.element.style.height = this.height + 'px';
+        this.element.style.zIndex = '1000';
+        this.element.style.imageRendering = 'auto';
+        this.element.style.display = 'block';
 
-        document.querySelector('#game').appendChild(this.element);
+        const container = document.querySelector('#game-container') || document.querySelector('#game');
+        container.appendChild(this.element);
+        
+        console.log('Fish created:', {
+            src: this.imageSrc,
+            x: this.x,
+            y: this.y,
+            width: this.width,
+            height: this.height
+        });
+        
+        // Force a render
+        setTimeout(() => this.render(), 0);
     }
 
     render() {
+        if (!this.element) return;
+        
         this.element.style.left = `${this.x}px`;
         this.element.style.top = `${this.y}px`;
         this.element.style.width = `${this.width}px`;
         this.element.style.height = `${this.height}px`;
         this.element.style.transform = this.direction < 0 ? 'scaleX(-1)' : 'scaleX(1)';
+        this.element.style.zIndex = '1000';
+        this.element.style.display = 'block';
+        this.element.style.position = 'fixed';
     }
 
 isColliding(other) {
-    const attackBoxWidth = this.width * 0.3;  
-    const attackBoxHeight = this.height * 0.4; 
+    const mouthSize = this.width * 0.2; 
+    let mouthX = (this.direction === 1) ? (this.x + this.width - mouthSize) : this.x;
+    const mouthY = this.y + (this.height / 2) - (mouthSize / 2);
+
+    const paddingW = other.width * 0.3; 
+    const paddingH = other.height * 0.3; 
     
-    let attackBoxX;
-    const attackBoxY = this.y + (this.height / 2) - (attackBoxHeight / 2);
+    const victimBox = {
+        x: other.x + paddingW,
+        y: other.y + paddingH,
+        w: other.width - (paddingW * 2),
+        h: other.height - (paddingH * 2)
+    };
 
-    if (this.direction === 1 || this.direction === 'right') {
-        attackBoxX = this.x + this.width - attackBoxWidth; 
-    } else {
-        attackBoxX = this.x;
-    }
-
-    const padding = 0.15; 
-    const targetX = other.x + (other.width * padding);
-    const targetY = other.y + (other.height * padding);
-    const targetW = other.width * (1 - (padding * 2));
-    const targetH = other.height * (1 - (padding * 2));
-
-    return (
-        attackBoxX < targetX + targetW &&
-        attackBoxX + attackBoxWidth > targetX &&
-        attackBoxY < targetY + targetH &&
-        attackBoxY + attackBoxHeight > targetY
+    const collision = (
+        mouthX < victimBox.x + victimBox.w &&
+        mouthX + mouthSize > victimBox.x &&
+        mouthY < victimBox.y + victimBox.h &&
+        mouthY + mouthSize > victimBox.y
     );
+
+    return collision;
 }
 
     destroy() {
-        this.element.remove();
+        if (this.element && this.element.parentNode) {
+            this.element.remove();
+        }
     }
 
     openMouth() {

@@ -4,7 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Feeding Frenzy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
+      :root {
+        --primary: #00e5ff;
+        --accent: #ffeb3b;
+      }
+
       * {
         margin: 0;
         padding: 0;
@@ -16,21 +22,37 @@
         justify-content: center;
         align-items: center;
         min-height: 100vh;
-        background: #1a1a2e;
+        background: #000;
         overflow: hidden;
+        font-family: 'Roboto', sans-serif;
+        color: white;
       }
 
       #game {
-        position: relative;
-        width: 1200px;
-        height: 700px;
-        background: linear-gradient(180deg, #0077be 0%, #004d80 100%);
-        border: 3px solid #fff;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        border: none;
         overflow: hidden;
+        background: #001d3d;
+      }
+
+      #game-video-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 1;
+        filter: brightness(0.7);
       }
 
       .fish {
         position: absolute;
+        z-index: 10;
       }
 
       #progress-container {
@@ -98,10 +120,573 @@
       .checkpoint.cp3 {
         left: 69.2%;
       }
+
+      /* UI Layer */
+      #ui-layer {
+        position: absolute;
+        top: 60px;
+        left: 20px;
+        right: 20px;
+        display: flex;
+        justify-content: space-between;
+        z-index: 5;
+        pointer-events: none;
+      }
+
+      .stats {
+        font-family: 'Fredoka One', cursive;
+        font-size: 1.2rem;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 10px 20px;
+        border-radius: 10px;
+        border: 2px solid var(--primary);
+      }
+
+      .target-indicator {
+        background: rgba(0, 0, 0, 0.6);
+        padding: 10px 20px;
+        border-radius: 40px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border: 2px solid var(--accent);
+      }
+
+      .target-indicator p {
+        margin: 0;
+        font-weight: bold;
+        font-size: 0.9rem;
+      }
+
+      .target-indicator img {
+        width: 40px;
+        height: 30px;
+        image-rendering: pixelated;
+      }
+
+      .target-indicator span {
+        font-weight: bold;
+        color: var(--accent);
+      }
+
+      /* Story Container */
+      #story-container {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(6px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 200;
+      }
+
+      .story-card {
+        width: 600px;
+        padding: 40px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        position: relative;
+        overflow: hidden;
+        border: 2px solid var(--primary);
+      }
+
+      #story-title {
+        font-family: 'Fredoka One', cursive;
+        font-size: 2rem;
+        margin-bottom: 20px;
+        text-align: center;
+        color: var(--accent);
+        text-shadow: 0 0 10px rgba(255, 235, 59, 0.5);
+      }
+
+      .story-content {
+        display: flex;
+        gap: 20px;
+        background: rgba(0, 0, 0, 0.3);
+        padding: 20px;
+        border-radius: 10px;
+        align-items: center;
+      }
+
+      #story-avatar {
+        width: 100px;
+        height: auto;
+        image-rendering: pixelated;
+      }
+
+      #story-text {
+        font-size: 1.1rem;
+        line-height: 1.6;
+      }
+
+      .story-controls {
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      /* Story Decorations */
+      .story-decor .bubble {
+        position: absolute;
+        bottom: -20px;
+        width: 14px;
+        height: 14px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        animation: rise 6s infinite;
+      }
+
+      .story-decor .s1 {
+        left: 25%;
+      }
+
+      .story-decor .s2 {
+        left: 75%;
+        animation-duration: 8s;
+      }
+
+      .pearl {
+        position: absolute;
+        bottom: 20px;
+        right: 30px;
+        width: 14px;
+        height: 14px;
+        background: radial-gradient(circle, #fff, #ccc);
+        border-radius: 50%;
+      }
+
+      .grass {
+        position: absolute;
+        bottom: 0;
+        left: 20px;
+        width: 6px;
+        height: 60px;
+        background: linear-gradient(to top, #0a5, #0f8);
+        border-radius: 5px;
+      }
+
+      @keyframes rise {
+        from {
+          transform: translateY(0);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(-120vh);
+          opacity: 1;
+        }
+      }
+
+      /* Buttons */
+      button {
+        padding: 12px 24px;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+        font-family: 'Roboto', sans-serif;
+        font-size: 1rem;
+        pointer-events: all;
+        transition: transform 0.2s;
+      }
+
+      button:hover {
+        transform: scale(1.05);
+      }
+
+      .primary-btn {
+        background: var(--primary);
+        color: #000;
+      }
+
+      .secondary-btn {
+        background: transparent;
+        border: 2px solid #aaa;
+        color: #aaa;
+      }
+
+      /* Bubble Transition */
+      #bubble-transition {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, #001d3d, #000);
+        z-index: 250;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .loading-center {
+        position: relative;
+        text-align: center;
+        font-family: 'Fredoka One', cursive;
+        font-size: 4rem;
+        letter-spacing: 6px;
+        color: var(--accent);
+        text-shadow: 0 0 20px rgba(255, 255, 0, 0.8);
+        z-index: 200;
+      }
+
+      .transition-bubbles {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+
+      .bub {
+        position: absolute;
+        bottom: -100px;
+        background-image: url('assets/characters/bubble.png');
+        background-size: contain;
+        background-repeat: no-repeat;
+        opacity: 0.9;
+        animation: bubbleRise linear infinite;
+      }
+
+      .b1 {
+        left: 5%;
+        width: 40px;
+        height: 40px;
+        animation-duration: 5s;
+        animation-delay: 0s;
+      }
+      .b2 {
+        left: 12%;
+        width: 60px;
+        height: 60px;
+        animation-duration: 7s;
+        animation-delay: 0.5s;
+      }
+      .b3 {
+        left: 20%;
+        width: 35px;
+        height: 35px;
+        animation-duration: 6s;
+        animation-delay: 1s;
+      }
+      .b4 {
+        left: 28%;
+        width: 70px;
+        height: 70px;
+        animation-duration: 8s;
+        animation-delay: 0.3s;
+      }
+      .b5 {
+        left: 35%;
+        width: 45px;
+        height: 45px;
+        animation-duration: 6.5s;
+        animation-delay: 0.8s;
+      }
+      .b6 {
+        left: 42%;
+        width: 55px;
+        height: 55px;
+        animation-duration: 7.5s;
+        animation-delay: 0.2s;
+      }
+      .b7 {
+        left: 50%;
+        width: 38px;
+        height: 38px;
+        animation-duration: 6.2s;
+        animation-delay: 1.2s;
+      }
+      .b8 {
+        left: 58%;
+        width: 80px;
+        height: 80px;
+        animation-duration: 9s;
+        animation-delay: 0.6s;
+      }
+      .b9 {
+        left: 65%;
+        width: 50px;
+        height: 50px;
+        animation-duration: 7.2s;
+        animation-delay: 0.4s;
+      }
+      .b10 {
+        left: 72%;
+        width: 30px;
+        height: 30px;
+        animation-duration: 5.5s;
+        animation-delay: 1.5s;
+      }
+      .b11 {
+        left: 78%;
+        width: 65px;
+        height: 65px;
+        animation-duration: 8.5s;
+        animation-delay: 0.7s;
+      }
+      .b12 {
+        left: 85%;
+        width: 42px;
+        height: 42px;
+        animation-duration: 6.8s;
+        animation-delay: 1.3s;
+      }
+      .b13 {
+        left: 92%;
+        width: 75px;
+        height: 75px;
+        animation-duration: 9.5s;
+        animation-delay: 0.1s;
+      }
+      .b14 {
+        left: 8%;
+        width: 48px;
+        height: 48px;
+        animation-duration: 7.8s;
+        animation-delay: 0.9s;
+      }
+      .b15 {
+        left: 16%;
+        width: 90px;
+        height: 90px;
+        animation-duration: 10s;
+        animation-delay: 0s;
+      }
+      .b16 {
+        left: 24%;
+        width: 52px;
+        height: 52px;
+        animation-duration: 6.3s;
+        animation-delay: 1.1s;
+      }
+      .b17 {
+        left: 32%;
+        width: 68px;
+        height: 68px;
+        animation-duration: 8.2s;
+        animation-delay: 0.4s;
+      }
+      .b18 {
+        left: 40%;
+        width: 44px;
+        height: 44px;
+        animation-duration: 7.1s;
+        animation-delay: 0.7s;
+      }
+      .b19 {
+        left: 48%;
+        width: 58px;
+        height: 58px;
+        animation-duration: 7.9s;
+        animation-delay: 0.5s;
+      }
+      .b20 {
+        left: 56%;
+        width: 36px;
+        height: 36px;
+        animation-duration: 5.8s;
+        animation-delay: 1.4s;
+      }
+      .b21 {
+        left: 64%;
+        width: 72px;
+        height: 72px;
+        animation-duration: 8.8s;
+        animation-delay: 0.3s;
+      }
+      .b22 {
+        left: 70%;
+        width: 46px;
+        height: 46px;
+        animation-duration: 6.6s;
+        animation-delay: 1s;
+      }
+      .b23 {
+        left: 76%;
+        width: 62px;
+        height: 62px;
+        animation-duration: 7.4s;
+        animation-delay: 0.6s;
+      }
+      .b24 {
+        left: 82%;
+        width: 54px;
+        height: 54px;
+        animation-duration: 6.9s;
+        animation-delay: 0.8s;
+      }
+      .b25 {
+        left: 88%;
+        width: 78px;
+        height: 78px;
+        animation-duration: 9.2s;
+        animation-delay: 0.2s;
+      }
+
+      @keyframes bubbleRise {
+        0% {
+          transform: translateY(0) scale(0.5);
+          opacity: 0;
+        }
+        10% {
+          opacity: 0.9;
+        }
+        90% {
+          opacity: 0.8;
+        }
+        100% {
+          transform: translateY(-120vh) scale(1.3);
+          opacity: 0;
+        }
+      }
+
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Shark Warning Text */
+      .shark-warning-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: 'Fredoka One', cursive;
+        font-size: 2.5rem;
+        color: #ff0000;
+        text-shadow: 0 0 20px rgba(255, 0, 0, 1), 0 0 40px rgba(255, 0, 0, 0.8);
+        z-index: 160;
+        animation: warningTextPulse 0.6s infinite;
+        pointer-events: none;
+        white-space: nowrap;
+      }
+
+      @keyframes warningTextPulse {
+        0%, 100% { 
+          opacity: 1; 
+          transform: translate(-50%, -50%) scale(1);
+        }
+        50% { 
+          opacity: 0.6; 
+          transform: translate(-50%, -50%) scale(1.1);
+        }
+      }
+
+      /* Level Announcement */
+      .level-announcement {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: 'Fredoka One', cursive;
+        font-size: 5rem;
+        color: var(--accent);
+        text-shadow: 0 0 30px rgba(255, 235, 59, 1), 0 0 60px rgba(255, 235, 59, 0.8);
+        z-index: 180;
+        animation: levelAnnounce 2s forwards;
+        pointer-events: none;
+      }
+
+      @keyframes levelAnnounce {
+        0% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.5);
+        }
+        20% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1.2);
+        }
+        80% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1);
+        }
+        100% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.8);
+        }
+      }
+
+      /* End Screen */
+      #end-screen {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 300;
+      }
+
+      #end-title {
+        font-family: 'Fredoka One', cursive;
+        font-size: 3rem;
+        margin-bottom: 20px;
+        color: var(--accent);
+        text-shadow: 0 0 20px rgba(255, 235, 59, 0.8);
+      }
+
+      #end-msg {
+        font-size: 1.3rem;
+        margin-bottom: 30px;
+        text-align: center;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      /* Make sure all game elements are above video */
+      .fish,
+      .bomb-img,
+      .shark-img {
+        position: absolute;
+        z-index: 50;
+      }
+
+      .fish {
+        pointer-events: none;
+      }
+
+      .bomb-img,
+      .shark-img {
+        pointer-events: none;
+      }
+
+      /* Shark Warning */
+      .shark-warning {
+        position: absolute;
+        width: 150px;
+        height: 150px;
+        z-index: 150;
+        animation: warningBlink 0.5s infinite;
+        pointer-events: none;
+      }
+
+      .shark-warning img {
+        width: 100%;
+        height: 100%;
+        filter: drop-shadow(0 0 20px rgba(255, 0, 0, 1)) brightness(1.3);
+      }
+
+      @keyframes warningBlink {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.4; transform: scale(1.15); }
+      }
     </style>
   </head>
   <body>
     <div id="game">
+      <!-- Video Background -->
+      <video id="game-video-bg" autoplay muted loop playsinline preload="auto">
+        <source src="assets/backgrounds/background.webm" type="video/webm">
+        Your browser does not support the video tag.
+      </video>
+
+      <!-- Progress Bar -->
       <div id="progress-container">
         <div id="progress-fill"></div>
         <div id="progress-text">0 / 650</div>
@@ -116,7 +701,88 @@
           <span class="checkpoint-label">Lv3</span>
         </div>
       </div>
+
+      <!-- UI Layer -->
+      <div id="ui-layer" class="hidden">
+        <div class="stats">
+          <div>SCORE: <span id="score-val">0</span></div>
+          <div>LEVEL: <span id="level-name">Tiny Fish</span></div>
+        </div>
+
+        <div class="target-indicator">
+          <p>HUNT THIS</p>
+          <img id="target-img" src="" alt="target">
+          <span id="target-name"></span>
+        </div>
+      </div>
+
+      <!-- Story Container -->
+      <div id="story-container">
+        <div class="story-card">
+          <div class="story-decor">
+            <span class="bubble s1"></span>
+            <span class="bubble s2"></span>
+            <span class="pearl"></span>
+            <span class="grass"></span>
+          </div>
+
+          <h1 id="story-title">THE DEPTHS</h1>
+
+          <div class="story-content">
+            <img id="story-avatar" src="" alt="character">
+            <p id="story-text"></p>
+          </div>
+
+          <div class="story-controls">
+            <button id="skip-btn" class="secondary-btn">SKIP</button>
+            <button id="next-btn" class="primary-btn">NEXT</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bubble Transition -->
+      <div id="bubble-transition" class="hidden">
+        <div class="loading-center">
+          <h2>LOADING</h2>
+        </div>
+
+        <div class="transition-bubbles">
+          <span class="bub b1"></span>
+          <span class="bub b2"></span>
+          <span class="bub b3"></span>
+          <span class="bub b4"></span>
+          <span class="bub b5"></span>
+          <span class="bub b6"></span>
+          <span class="bub b7"></span>
+          <span class="bub b8"></span>
+          <span class="bub b9"></span>
+          <span class="bub b10"></span>
+          <span class="bub b11"></span>
+          <span class="bub b12"></span>
+          <span class="bub b13"></span>
+          <span class="bub b14"></span>
+          <span class="bub b15"></span>
+          <span class="bub b16"></span>
+          <span class="bub b17"></span>
+          <span class="bub b18"></span>
+          <span class="bub b19"></span>
+          <span class="bub b20"></span>
+          <span class="bub b21"></span>
+          <span class="bub b22"></span>
+          <span class="bub b23"></span>
+          <span class="bub b24"></span>
+          <span class="bub b25"></span>
+        </div>
+      </div>
+
+      <!-- End Screen -->
+      <div id="end-screen" class="hidden">
+        <h1 id="end-title">GAME OVER</h1>
+        <p id="end-msg">Try again!</p>
+        <button id="restart-btn" class="primary-btn">PLAY AGAIN</button>
+      </div>
     </div>
+
     <script type="module" src="./js/main.js"></script>
   </body>
 </html>

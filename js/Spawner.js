@@ -3,29 +3,33 @@ import { CONFIG } from '../config/config.js';
 
 export default class Spawner {
     constructor() {
-        this.enemyTypes = [
-            { name: 'tiny-fry', level: CONFIG.SIZE.TINY, weight: 0.4, spawnWeight: 70 },
-            { name: 'swift-minnow', level: CONFIG.SIZE.SMALL, weight: 1.0, spawnWeight: 20 },
-            { name: 'spotted-reef', level: CONFIG.SIZE.MEDIUM, weight: 1.4, spawnWeight: 8 },
-            { name: 'hunter', level: CONFIG.SIZE.LARGE, weight: 1.8, spawnWeight: 2 }
-        ];
+      this.enemyTypes = [
+        { name: 'tiny-fry', level: CONFIG.SIZE.TINY, weight: 0.4, spawnWeight: 50 },
+        { name: 'swift-minnow', level: CONFIG.SIZE.SMALL, weight: 1.0, spawnWeight: 30 },
+        { name: 'spotted-reef', level: CONFIG.SIZE.MEDIUM, weight: 1.4, spawnWeight: 15 },
+        { name: 'hunter', level: CONFIG.SIZE.LARGE, weight: 1.8, spawnWeight: 5 }
+    ];
     }
 
-  selectEnemyType(playerLevel) {
+ 
+ selectEnemyType(playerLevel) {
     const availableTypes = this.enemyTypes.filter(t => t.level <= playerLevel + 1);
 
     const weightedTypes = availableTypes.map(type => {
         let weight = type.spawnWeight;
 
         if (type.level === playerLevel) {
-            weight = type.spawnWeight * 1.5; 
+            weight = type.spawnWeight * 2.0;
         } 
         else if (type.level === playerLevel + 1) {
-            weight = type.spawnWeight * 1.0;
+            weight = type.spawnWeight * 1.5;
         } 
-        else if (type.level < playerLevel) {
+        else if (type.level === playerLevel - 1) {
+            weight = type.spawnWeight * 0.8;
+        }
+        else if (type.level < playerLevel - 1) {
             const levelDiff = playerLevel - type.level;
-            const reductionFactor = Math.pow(0.4, levelDiff); 
+            const reductionFactor = Math.pow(0.3, levelDiff);
             weight = type.spawnWeight * reductionFactor;
         }
 
@@ -47,43 +51,53 @@ export default class Spawner {
         return this.enemyTypes.find(t => t.level === level) || null;
     }
 
+
     getRandomDirection() {
         return Math.random() > 0.5 ? CONFIG.DIRECTION.RIGHT : CONFIG.DIRECTION.LEFT;
     }
 
-    spawnByLevel(level) {
-        const direction = this.getRandomDirection();
-        const x = direction === CONFIG.DIRECTION.RIGHT ? -150 : CONFIG.CANVAS_WIDTH + 150;
-        const y = Math.random() * (CONFIG.CANVAS_HEIGHT - 100) + 50;
 
-        const enemyType = this.getEnemyByLevel(level);
-        if (!enemyType) return null;
-
-        const imgSrc = `assets/characters/${enemyType.name}_right_closed.png`;
-        return new EnemyFish(x, y, imgSrc, enemyType.weight, direction, enemyType.level);
+    getFishImage(name, direction) {
+        return `assets/characters/${name}_right_closed.png`;
     }
 
     spawn(playerLevel = 0) {
         const direction = this.getRandomDirection();
-        const x = direction === CONFIG.DIRECTION.RIGHT ? -150 : CONFIG.CANVAS_WIDTH + 150;
-        const y = Math.random() * (CONFIG.CANVAS_HEIGHT - 100) + 50;
+        
+        const x = (direction === CONFIG.DIRECTION.RIGHT) ? -200 : window.innerWidth + 200;
+        const y = Math.random() * (window.innerHeight - 150) + 75;
 
         const enemyType = this.selectEnemyType(playerLevel);
+        
         const imgSrc = `assets/characters/${enemyType.name}_right_closed.png`;
 
         return new EnemyFish(x, y, imgSrc, enemyType.weight, direction, enemyType.level);
     }
 
+  
+    spawnByLevel(level) {
+        const direction = this.getRandomDirection();
+        const x = direction === 1 ? -150 : window.innerWidth + 150;
+        const y = Math.random() * (window.innerHeight - 150) + 75;
+
+        const enemyType = this.getEnemyByLevel(level);
+        if (!enemyType) return null;
+
+        const imgSrc = this.getFishImage(enemyType.name, direction);
+        return new EnemyFish(x, y, imgSrc, enemyType.weight, direction, enemyType.level);
+    }
+
+ 
     spawnApex() {
         const direction = this.getRandomDirection();
-        const x = direction === CONFIG.DIRECTION.RIGHT ? -50 : CONFIG.CANVAS_WIDTH + 50;
-        const y = CONFIG.CANVAS_HEIGHT / 2;
+        const x = (direction === CONFIG.DIRECTION.RIGHT) ? -200 : window.innerWidth + 200;
+        const y = window.innerHeight / 2;
 
         const imgSrc = 'assets/characters/apex_right_closed.png';
-        const apex = new EnemyFish(x, y, imgSrc, 2.5, direction, 4, true);
+        const apex = new EnemyFish(x, y, imgSrc, 2.5, direction, 4);
 
         apex.speed = 2.5;
-        apex.isApex = true;
+        apex.isApex = true; 
         return apex;
     }
 }
