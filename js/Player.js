@@ -41,8 +41,9 @@ export default class Player extends Fish {
 
         this.x += (mouthX - this.x) * this.speed;
         this.y += (mouthY - this.y) * this.speed;
-        this.x = Math.max(0, Math.min(this.x, CONFIG.CANVAS_WIDTH - this.width));
-        this.y = Math.max(0, Math.min(this.y, CONFIG.CANVAS_HEIGHT - this.height));
+        // Use live window dimensions for full movement range
+        this.x = Math.max(0, Math.min(this.x, window.innerWidth - this.width));
+        this.y = Math.max(0, Math.min(this.y, window.innerHeight - this.height));
 
         this.render();
     }

@@ -90,14 +90,14 @@ export default class Spawner {
  
     spawnApex() {
         const direction = this.getRandomDirection();
-        const x = (direction === CONFIG.DIRECTION.RIGHT) ? -200 : window.innerWidth + 200;
-        const y = window.innerHeight / 2;
+        const x = (direction === CONFIG.DIRECTION.RIGHT) ? -150 : window.innerWidth + 150;
+        const y = Math.random() * (window.innerHeight - 150) + 75;
 
         const imgSrc = 'assets/characters/apex_right_closed.png';
-        const apex = new EnemyFish(x, y, imgSrc, 2.5, direction, 4);
+        const apex = new EnemyFish(x, y, imgSrc, 2.5, direction, 3, true);
 
         apex.speed = 2.5;
-        apex.isApex = true; 
+        apex.isApex = true;
         return apex;
     }
 }

@@ -98,6 +98,6 @@ BOMB: {
         }
     ],
 
-    LEVEL_NAMES: ["Tiny Fish", "Hunter Fish", "Apex Fish", "Ocean King"]
+    LEVEL_NAMES: ["Swift Minnow", "Spotted Reef", "Hunter", "Apex"]
 
 };

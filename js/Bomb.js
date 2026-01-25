@@ -27,7 +27,6 @@ export default class Bomb {
         
         container.appendChild(this.element);
         
-        console.log('Bomb created at:', this.x, this.y);
         this.render();
     }
 
@@ -51,8 +50,6 @@ export default class Bomb {
         
         this.exploded = true;
         this.element.src = 'assets/characters/boom.png';
-        
-        console.log('BOOM! Bomb exploded at:', this.x, this.y);
     }
 
     destroy() {
