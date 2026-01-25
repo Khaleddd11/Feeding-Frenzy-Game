@@ -39,8 +39,8 @@ export default class Game {
     this.winSound = new Audio('assets/audio/congratulation.wav');
     this.winSound.preload = 'auto';
 
-    this.bombSpawnSound = new Audio('assets/audio/bomb.mp3');
-    this.bombSpawnSound.preload = 'auto';
+    this.bombHitSound = new Audio('assets/audio/bomb.mp3');
+    this.bombHitSound.preload = 'auto';
 
     this.backgroundMusic = new Audio('assets/audio/backgroundMusic.mp3');
     this.backgroundMusic.preload = 'auto';
@@ -152,10 +152,10 @@ export default class Game {
     this.winSound.play().catch(() => {});
   }
 
-  playBombSpawnSound() {
-    if (!this.bombSpawnSound || this.sfxMuted) return;
-    this.bombSpawnSound.currentTime = 0;
-    this.bombSpawnSound.play().catch(() => {});
+  playBombHitSound() {
+    if (!this.bombHitSound || this.sfxMuted) return;
+    this.bombHitSound.currentTime = 0;
+    this.bombHitSound.play().catch(() => {});
   }
 
   startBackgroundMusic() {
@@ -186,7 +186,7 @@ spawnBomb() {
     
     if (this.frameCount % interval !== 0) return;
     const bomb = new Bomb();
-    this.playBombSpawnSound();
+
     this.bombs.push(bomb);
 }
   
@@ -500,8 +500,11 @@ update() {
         
         if (!bomb.exploded) {
             if (bomb.checkCollision(this.player)) {
+                // Play bomb sound on hit 
+                this.playBombHitSound();
                 bomb.explode();
-                this.gameOver("You were hit by a bomb!");
+                // Delay gameover sound slightly so it won't overlap the bomb-hit sound
+                this.gameOver("You were hit by a bomb!", 400);
                 return;
             }
             
@@ -509,6 +512,8 @@ update() {
                 const enemy = this.enemies[j];
                 // Don't let bombs destroy the Apex boss!
                 if (!enemy.isApex && bomb.checkCollision(enemy)) {
+                    // Play bomb sound on hit 
+                    this.playBombHitSound();
                     bomb.explode();
                     enemy.destroy();
                     this.enemies.splice(j, 1);
@@ -592,11 +597,19 @@ update() {
     }
 }
 
-  gameOver(message = "You were eaten!") { 
+  gameOver(message = "You were eaten!", soundDelayMs = 0) { 
+    if (this.state === 'GAME_OVER') return;
     this.state = 'GAME_OVER';
     const highScore = this.updateHighScore();
     this.stopBackgroundMusic();
-    this.playGameOverSound();
+    if (soundDelayMs > 0) {
+      setTimeout(() => {
+        // If player restarted quickly, don't play delayed gameover sound
+        if (this.state === 'GAME_OVER') this.playGameOverSound();
+      }, soundDelayMs);
+    } else {
+      this.playGameOverSound();
+    }
     this.player.hide();
     this.hideThoughtBubble();
     document.getElementById('end-title').textContent = 'GAME OVER';
