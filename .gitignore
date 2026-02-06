@@ -1,0 +1,15 @@
+# VS Code settings
+.vscode/
+
+# macOS system files
+.DS_Store
+.DS_Store?
+._*
+
+# Local history
+.history/
+
+# IDE files
+*.swp
+*.swo
+*~
